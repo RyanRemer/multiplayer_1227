@@ -1,34 +1,30 @@
 extends Node
 
-# concept of starts and syncs, if you don't have an old value, set it, otherwise be smooth
+# state of the world, as we know it locally
+var state := {};
 
-var syncs := {};
-signal on_sync_update(peer_id, old_sync, new_sync);
+# listen to this to update our state to match
+signal state_update(substate_id, old, new);
 
-func _ready() -> void:
-	Lobby.player_connected.connect(on_player_connected);
-
-func emit(id, sync):
-	syncs[id] = sync;
-	send_sync.rpc_id(1, id, sync);
+# use this to update the state we own
+func update(substate_id, sub_state):
+	state[substate_id] = sub_state;
+	send_update.rpc_id(1, substate_id, sub_state);
 	
-# Send sync to server
 @rpc("any_peer", "call_local")
-func send_sync(id, sync):
-	syncs[id] = sync;
+func send_update(substate_id, sub_state):
+	state[substate_id] = sub_state;
+	sync_update.rpc(substate_id, sub_state);
 	
-	# Update sync for clients
-	update_sync.rpc(id, sync);
-		
-# Send sync to clients
 @rpc("authority", "call_local")
-func update_sync(id, sync):
-	on_sync_update.emit(id, syncs[id] if syncs.has(id) else {}, sync);
-	syncs[id] = sync;
-
+func sync_update(substate_id, sub_state):
+	state_update.emit(substate_id, state[substate_id] if state.has(substate_id) else {}, sub_state);
+	state[substate_id] = sub_state;
+	
 func on_player_connected(peer_id, player_info):
-	send_state.rpc_id(peer_id, syncs);
-
-@rpc("authority", "call_local")	
-func send_state(server_syncs):
-	syncs = server_syncs;
+	send_entire_state.rpc_id(peer_id, state);
+	
+@rpc("authority", "call_local")
+func send_entire_state(server_state):
+	state = server_state;
+	print(multiplayer.get_unique_id(), state);

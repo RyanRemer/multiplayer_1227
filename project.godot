@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 Lobby="*res://scripts/lobby.gd"
 Sync="*res://scripts/sync.gd"
+Players="*res://scripts/network_list.gd"
 
 [rendering]
 

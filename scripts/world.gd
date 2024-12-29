@@ -13,6 +13,8 @@ func _process(delta: float) -> void:
 			var player: Player =  player_scene.instantiate();
 			player.peer_id = peer_id;
 			player.player_info = Lobby.players[peer_id];
+			if Sync.state.has(peer_id):
+				player.position = Sync.state[peer_id]["position"];
 			add_child(player);
 			players[peer_id] = player;
 			
