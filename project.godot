@@ -18,7 +18,6 @@ config/icon="res://icon.svg"
 [autoload]
 
 Lobby="*res://scripts/lobby.gd"
-Sync="*res://scripts/sync.gd"
 NetworkPlayers="*res://scripts/network_list.gd"
 
 [rendering]
