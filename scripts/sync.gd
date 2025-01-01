@@ -21,7 +21,7 @@ func sync_update(substate_id, sub_state):
 	state_update.emit(substate_id, state[substate_id] if state.has(substate_id) else {}, sub_state);
 	state[substate_id] = sub_state;
 	
-func on_player_connected(peer_id, player_info):
+func on_player_connected(peer_id, _player_info):
 	send_entire_state.rpc_id(peer_id, state);
 	
 @rpc("authority", "call_local")

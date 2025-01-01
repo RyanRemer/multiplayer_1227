@@ -68,7 +68,7 @@ func load_game(game_scene_path):
 @rpc("any_peer", "call_local", "reliable")
 func player_loaded():
 	if multiplayer.is_server():
-		players_loaded += 1
+		players_loaded += 1	
 		if players_loaded == players.size():
 			$/root/Game.start_game()
 			players_loaded = 0
@@ -79,13 +79,11 @@ func player_loaded():
 func _on_player_connected(id):
 	_register_player.rpc_id(id, player_info)
 
-
 @rpc("any_peer", "reliable")
 func _register_player(new_player_info):
 	var new_player_id = multiplayer.get_remote_sender_id()
 	players[new_player_id] = new_player_info
 	player_connected.emit(new_player_id, new_player_info)
-
 
 func _on_player_disconnected(id):
 	players.erase(id)
